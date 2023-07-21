@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>WebShare API Demo</title>
+    <style>
+        html, body {
+            min-height: 100vh;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #app {
+            display: contents;
+            /*width: 1280px;*/
+        }
+        button {
+            padding: 16px;
+            margin: 4px;
+        }
+        .result {
+            padding: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <button id="btn-img">Share Image</button>
+        <button id="btn-vid">Share Video</button>
+        <div class="result"></div>
+    </div>
+    <script type="module">
+        const resultElem  = document.querySelector(".result");
+        const shareImgBtn = document.querySelector("button#btn-img");
+        const shareVidBtn = document.querySelector("button#btn-vid");
+
+        shareImgBtn.addEventListener("click", async () => {
+            const filename = "[twitter] SpaceX—2023.07.21—1682459952789741568—F1lMRwhaUAAqsNG.jpg";
+            const blob = await fetchFile(filename);
+            const shareDataImg = {
+                text: "Falcon Heavy in the hangar at LC-39A in Florida",
+                url: "https://twitter.com/SpaceX/status/1682459952789741568",
+                files: [new File([blob], filename, {type: "image/jpeg"})],
+            };
+            void share(shareDataImg);
+        });
+        shareVidBtn.addEventListener("click", async () => {
+            const filename = "[twitter] SpaceX—2023.07.20—1682109433206415361—Uyl-CIs_XujsIwPa.mp4";
+            const blob = await fetchFile(filename);
+            const shareDataVid = {
+                text: "View from Falcon 9's second stage during an orbital sunset",
+                url: "https://twitter.com/SpaceX/status/1682109433206415361",
+                files: [new File([blob], filename, {type: "video/mp4"})],
+            };
+            void share(shareDataVid);
+        });
+
+        async function fetchFile(filename) {
+            const resp = await fetch(`./${filename}`);
+            return resp.blob();
+        }
+
+        async function share(data) {
+            try {
+                await navigator.share(data);
+                resultElem.textContent = "Shared successfully";
+            } catch (err) {
+                resultElem.textContent = `Error: ${err}`;
+            }
+        }
+    </script>
+</body>
+</html>
